@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>The Tobby — Olyndra</title>
+<style>
+/* styles.css - modern black & white aesthetic with subtle greys and glass effects */
+
+:root{
+  --bg:#0b0b0c;
+  --card:#0f0f10;
+  --muted:#9a9a9a;
+  --glass: rgba(255,255,255,0.06);
+  --accent: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  --glass-strong: rgba(255,255,255,0.08);
+  --radius:14px;
+  --ease:cubic-bezier(.2,.9,.3,1);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);color:#fff;font-family:Inter,ui-sans-serif,system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;font-size:16px; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+
+a{color:inherit;text-decoration:none}
+
+.container{max-width:1100px;margin:0 auto;padding:32px;position:relative;z-index:2}
+
+/* subtle background light animation */
+.bg-light{
+  position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;
+}
+.bg-light::before{
+  content:"";position:absolute;left:10%;top:-10%;width:70vmax;height:70vmax;background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.06), transparent 20%), radial-gradient(circle at 70% 60%, rgba(255,255,255,0.03), transparent 15%);transform:translate3d(0,0,0);filter:blur(70px);animation:drift 18s linear infinite alternate;
+}
+@keyframes drift{from{transform:translateY(0) translateX(0) rotate(0)} to{transform:translateY(30px) translateX(-40px) rotate(3deg)}}
+
+/* Header */
+.header{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:10px 0;}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{height:40px;width:auto;filter:drop-shadow(0 6px 20px rgba(0,0,0,0.6));border-radius:6px;background:transparent;padding:2px}
+.search{flex:1;max-width:520px;position:relative}
+.search input{width:100%;padding:12px 16px;border-radius:12px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff;outline:none;font-size:15px}
+.icon-btn{background:var(--glass);border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center;padding:36px 0}
+.hero-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border-radius:20px;padding:28px;border:1px solid rgba(255,255,255,0.04);backdrop-filter: blur(6px);box-shadow: 0 10px 30px rgba(0,0,0,0.6);position:relative;overflow:visible}
+.hero h1{font-size:34px;margin:0 0 8px;letter-spacing:-0.02em}
+.lead{color:var(--muted);margin-bottom:18px}
+
+/* App card */
+.app-card{display:flex;gap:18px;align-items:center;padding:18px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border:1px solid rgba(255,255,255,0.03)}
+.app-thumb{width:120px;height:120px;border-radius:22px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.02);position:relative;overflow:hidden}
+.app-thumb .orb{position:absolute;width:220px;height:220px;border-radius:50%;left:-40px;top:-80px;background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.06), transparent 20%);filter:blur(30px);opacity:0.6;transform:translateZ(0);animation:spin 12s linear infinite}
+@keyframes spin{from{transform:rotate(0deg)} to{transform:rotate(360deg)}}
+.app-info h3{margin:0;font-size:18px}
+.meta{color:var(--muted);font-size:13px;margin-top:6px}
+
+/* big inactive button */
+.btn{display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border-radius:12px;border:none;background:linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));color:#fff;font-weight:600;cursor:pointer;transition:transform .25s var(--ease), box-shadow .25s var(--ease)}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+.btn.disabled{opacity:0.45;cursor:not-allowed;position:relative}
+.btn.disabled::after{content:"в разработке";position:absolute;right:10px;bottom:-22px;font-size:12px;color:var(--muted)}
+
+/* Grid of apps */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px;margin-top:24px}
+.card{padding:18px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border:1px solid rgba(255,255,255,0.03);overflow:hidden;transition:transform .6s var(--ease), box-shadow .6s var(--ease);transform:translateY(20px);opacity:0;will-change:transform,opacity}
+.card.visible{transform:none;opacity:1}
+.card .thumb{height:140px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted);margin-bottom:12px;border:1px solid rgba(255,255,255,0.02)}
+
+/* Bottom navigation - iOS17 like */
+.bottom-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;width:min(720px,92%);height:68px;border-radius:18px;display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(255,255,255,0.03);backdrop-filter: blur(12px) saturate(130%);border:1px solid rgba(255,255,255,0.04);z-index:999;box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+
+/* nav items */
+.nav-item{flex:1;text-align:center;padding:6px;border-radius:12px;color:var(--muted);font-size:13px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.nav-item.active{color:#fff}
+.nav-ico{width:20px;height:20px;display:inline-block;opacity:0.95}
+
+/* popup ad */
+.modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.98);width:min(560px,92%);background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border-radius:16px;padding:18px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 20px 50px rgba(0,0,0,0.7);z-index:1500;backdrop-filter: blur(6px);opacity:0;pointer-events:none;transition:all .28s var(--ease)}
+.modal.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.modal .close{position:absolute;right:12px;top:12px;background:transparent;border:none;color:var(--muted);font-size:16px}
+.modal .ad{display:flex;gap:16px;align-items:center}
+.modal .ad .box{flex:1;padding:12px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
+
+/* small animations */
+.fade-up{transform:translateY(20px);opacity:0;transition:transform .6s var(--ease), opacity .6s var(--ease)}
+.fade-up.in{transform:none;opacity:1}
+
+/* responsive */
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr;gap:18px}
+  .brand img{height:34px}
+  .hero h1{font-size:28px}
+  .bottom-nav{height:64px}
+}
+</style>
+</head>
+<body>
+<div aria-hidden="true" class="bg-light"></div>
+<header class="container header">
+<div class="brand"><img alt="Olyndra logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMzAiIHdpZHRoPSIxNjAiIGhlaWdodD0iNDgiPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeDI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjY2NjIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjMwIiByeD0iNiIgZmlsbD0iYmxhY2siIC8+CiAgPHRleHQgeD0iMTQiIHk9IjIwIiBmb250LWZhbWlseT0iSW50ZXIsIHN5c3RlbS11aSwgLWFwcGxlLXN5c3RlbSwgJ1NlZ29lIFVJJywgUm9ib3RvLCAnSGVsdmV0aWNhIE5ldWUnLCBBcmlhbCIKICAgICAgICBmb250LXdlaWdodD0iNzAwIiBmb250LXNpemU9IjE0IiBmaWxsPSJ1cmwoI2cpIj5PbHluZHJhPC90ZXh0Pgo8L3N2Zz4="/></div>
+<div></div>
+</header>
+<main class="container">
+<section class="hero-card" style="padding:28px 18px;display:block">
+<div style="display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap">
+<div style="min-width:260px;max-width:420px">
+<div style="border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,0.03);background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:18px">
+<div style="display:flex;gap:12px;align-items:center">
+<div style="width:110px;height:110px;border-radius:18px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center">
+<svg aria-hidden="true" height="76" viewbox="0 0 64 64" width="76"><circle cx="32" cy="24" fill="rgba(255,255,255,0.04)" r="10"></circle><rect fill="rgba(255,255,255,0.03)" height="6" rx="3" width="16" x="24" y="36"></rect></svg>
+</div>
+<div>
+<h2 style="margin:0">The Tobby — Hover</h2>
+<div style="color:var(--muted);font-size:13px;margin-top:6px">Аркада · 0.7 · В разработке</div>
+</div>
+</div>
+<div style="margin-top:14px;display:flex;gap:12px;align-items:center">
+<button aria-disabled="true" class="btn primary disabled">Получить</button>
+<a class="btn" href="index.html">Назад</a>
+</div>
+</div>
+<div style="margin-top:14px;padding:12px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)">
+<strong>Описание</strong>
+<p style="color:var(--muted);margin:8px 0 0">The Tobby — захватывающая аркада про управление летающим персонажем Hover. Тонкая физика, динамические уровни и мультиплеер (в будущем).</p>
+</div>
+</div>
+<div style="flex:1;min-width:320px">
+<div style="display:flex;gap:12px;flex-wrap:wrap">
+<div style="width:calc(50% - 6px);height:180px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)"></div>
+<div style="width:calc(50% - 6px);height:180px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)"></div>
+<div style="width:calc(50% - 6px);height:180px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)"></div>
+<div style="width:calc(50% - 6px);height:180px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)"></div>
+</div>
+</div>
+</div>
+</section>
+<section style="margin-top:18px">
+<h3>Отзывы</h3>
+<div class="grid" style="grid-template-columns:repeat(1,1fr)">
+<div class="card fade-up">
+<div style="font-weight:600">Алексей</div>
+<div style="color:var(--muted);margin-top:6px">Интересная механика — жду релиз!</div>
+</div>
+<div class="card fade-up">
+<div style="font-weight:600">Мария</div>
+<div style="color:var(--muted);margin-top:6px">Графика в духе минимализма — круто.</div>
+</div>
+</div>
+</section>
+</main>
+<!-- bottom nav (same) -->
+<nav aria-label="Навигация" class="bottom-nav" role="navigation" style="position:fixed;bottom:0;width:100%;display:flex;justify-content:space-around;background:rgba(255,255,255,0.08);backdrop-filter:blur(20px);padding:10px 0;">
+<div class="nav-item"><svg class="nav-ico" viewbox="0 0 24 24"><path d="M3 12h18v2H3z" fill="currentColor"></path></svg>Главная</div>
+<div class="nav-item active"><svg class="nav-ico" viewbox="0 0 24 24"><circle cx="12" cy="8" fill="currentColor" r="3"></circle></svg>Игры</div>
+<div class="nav-item"><svg class="nav-ico" viewbox="0 0 24 24"><path d="M4 6h16v12H4z" fill="none" stroke="currentColor" stroke-width="1.2"></path></svg>Категории</div>
+<div class="nav-item"><svg class="nav-ico" viewbox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" fill="currentColor"></path></svg>Аккаунт</div>
+</nav>
+<script>
+// script.js - interactions: scroll reveal, modal popup, disabled button tooltip, floating bg subtle movement
+document.addEventListener('DOMContentLoaded', ()=>{
+  // Scroll reveal using IntersectionObserver
+  const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+        entry.target.querySelectorAll('.fade-up').forEach(el=>el.classList.add('in'));
+        // once visible, unobserve for performance
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {threshold:0.12});
+  document.querySelectorAll('.card, .hero-card').forEach(el=>observer.observe(el));
+
+  // Modal popup (ad)
+  const modal = document.querySelector('.modal');
+  const openAd = document.querySelector('#openAd');
+  const closeAd = document.querySelector('#closeAd');
+  if(openAd){ openAd.addEventListener('click', ()=> modal.classList.add('show')); }
+  if(closeAd){ closeAd.addEventListener('click', ()=> modal.classList.remove('show')); }
+
+  // automatic show after some delay
+  setTimeout(()=>{ if(modal) modal.classList.add('show') }, 4200);
+
+  // disabled button tooltip on hover (for desktop)
+  const disBtn = document.querySelector('.btn.disabled');
+  if(disBtn){
+    disBtn.addEventListener('mouseenter', ()=>{
+      // small pulse to indicate it's disabled
+      disBtn.animate([{transform:'scale(1)'},{transform:'scale(1.02)'},{transform:'scale(1)'}],{duration:700,iterations:1})
+    });
+  }
+
+  // subtle parallax on mousemove for hero orb
+  const orb = document.querySelector('.app-thumb .orb');
+  const hero = document.querySelector('.hero');
+  if(orb && hero){
+    hero.addEventListener('mousemove', (e)=>{
+      const rect = hero.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      orb.style.transform = `translate3d(${x*8}px, ${y*8}px, 0) rotate(${x*40}deg)`;
+    });
+    hero.addEventListener('mouseleave', ()=> orb.style.transform = '');
+  }
+
+  // bottom nav active switching (demo)
+  document.querySelectorAll('.nav-item').forEach(item=>{
+    item.addEventListener('click', ()=>{
+      document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+      item.classList.add('active');
+    })
+  })
+
+});
+</script>
+</body>
+</html>
